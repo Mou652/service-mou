@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpSession;
+import java.util.Enumeration;
+
 @RestController
 public class UserController {
 
@@ -78,16 +81,42 @@ public class UserController {
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             //获取subject对象
             Subject subject = SecurityUtils.getSubject();
+
+            //获取自定义的session
+            String sid = subject.getSession().getId().toString();
+
             //进行登录
             subject.login(token);
-            return "登录成功";
+            return "登录成功,sessionId:" + sid;
         } catch (AuthenticationException e) {
             return "登录失败,用户名或密码错误";
         }
     }
 
+    /**
+     * 未登录或未授权跳转地址
+     *
+     * @param code 状态码
+     */
     @RequestMapping("/authError")
     public String authError(int code) {
         return code == 1 ? "未登录" : "未授权";
+    }
+
+    /**
+     * 登录成功打印所有session信息
+     *
+     * @param session 登录成功存储的session信息
+     */
+    @RequestMapping("/show")
+    public String show(HttpSession session) {
+        //获取所有键值
+        Enumeration<String> attributeNames = session.getAttributeNames();
+        while (attributeNames.hasMoreElements()) {
+            String name = attributeNames.nextElement().toString();
+            Object value = session.getAttribute(name);
+            System.out.println("<B>" + name + "</B>" + value + "<br>/n");
+        }
+        return "查看session成功";
     }
 }

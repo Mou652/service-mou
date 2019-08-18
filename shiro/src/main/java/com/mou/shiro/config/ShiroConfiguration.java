@@ -1,10 +1,16 @@
 package com.mou.shiro.config;
 
 import com.mou.shiro.realm.CustomRealm;
+import com.mou.shiro.session.CustomSessionManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +26,12 @@ import java.util.Map;
 @Configuration
 public class ShiroConfiguration {
 
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.port}")
+    private int port;
+
     /**
      * 创建realm
      */
@@ -33,7 +45,12 @@ public class ShiroConfiguration {
      */
     @Bean
     public SecurityManager getSecurityManager(CustomRealm realm) {
-        return new DefaultWebSecurityManager(realm);
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(realm);
+        //将自定义的会话管理器注册到安全管理器
+        securityManager.setSessionManager(getSessionManager());
+        //将自定义redis缓存管理器注册到安全管理器中
+        securityManager.setCacheManager(getRedisCacheManager());
+        return securityManager;
     }
 
     /**
@@ -73,6 +90,45 @@ public class ShiroConfiguration {
         filterMap.put("/user/**", "authc");
         filterFactory.setFilterChainDefinitionMap(filterMap);
         return filterFactory;
+    }
+
+    /**
+     * redis控制器,操作redis
+     */
+    public RedisManager getRedisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(host);
+        redisManager.setPort(port);
+        return redisManager;
+    }
+
+    /**
+     * sessionDao
+     */
+    public RedisSessionDAO getRedisSessionDao() {
+        RedisSessionDAO sessionDAO = new RedisSessionDAO();
+        sessionDAO.setRedisManager(getRedisManager());
+        return sessionDAO;
+    }
+
+    /**
+     * 自定义会话管理器
+     */
+    public DefaultWebSessionManager getSessionManager() {
+        CustomSessionManager customSessionManager = new CustomSessionManager();
+        customSessionManager.setSessionDAO(getRedisSessionDao());
+
+        return customSessionManager;
+    }
+
+    /**
+     * 缓存管理器
+     */
+    @Bean
+    public RedisCacheManager getRedisCacheManager() {
+        RedisCacheManager cacheManager = new RedisCacheManager();
+        cacheManager.setRedisManager(getRedisManager());
+        return cacheManager;
     }
 
     /**
