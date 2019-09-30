@@ -1,4 +1,4 @@
-package cn.mou.annotation;
+package com.mou.annotation;
 
 /**
  * @author: mou

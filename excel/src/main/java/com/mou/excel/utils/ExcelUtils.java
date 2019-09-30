@@ -1,6 +1,7 @@
 package com.mou.excel.utils;
 
 import org.apache.commons.compress.utils.Lists;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static javax.xml.bind.JAXBIntrospector.getValue;
@@ -28,6 +30,7 @@ import static javax.xml.bind.JAXBIntrospector.getValue;
  */
 public class ExcelUtils {
 
+
     /**
      * 导出excel
      *
@@ -36,7 +39,8 @@ public class ExcelUtils {
      * @param list      要输出的对象集合
      * @param fileName  输出文件名称
      */
-    public static void exportExcel(String titleText, Map<String, String> map, List<?> list, String fileName) {
+    public static void exportExcel(String titleText, Map<String, String> map, List<?> list, String fileName) throws Exception {
+
         //创建单元格并设置单元格内容
         //返回的集合
         Set<String> keySet = map.keySet();
@@ -44,6 +48,11 @@ public class ExcelUtils {
         XSSFWorkbook workbook = new XSSFWorkbook();
         // 建立新的sheet对象（excel的表单）
         XSSFSheet sheet = workbook.createSheet("数据源");
+
+        if (list.size() <= sheet.getLastRowNum()) {
+            throw new Exception("Excel行数超出读取最大限制[" + list.size() + "]，不允许读取!");
+        }
+
         // 设置默认列宽为15
         sheet.setDefaultColumnWidth(15);
         // 合并标题栏单元格
@@ -163,10 +172,17 @@ public class ExcelUtils {
             int numberOfSheets = workbook.getNumberOfSheets();
             for (int i = 0; i < numberOfSheets; i++) {
                 Sheet sheet = workbook.getSheetAt(i);
-
-                //从第三行开始获取数据
-                for (int rowNum = 2; rowNum <= sheet.getLastRowNum(); rowNum++) {
+                if (sheet == null)
+                {
+                    throw new IOException("文件工作表不存在");
+                }
+                //从第二行开始获取数据
+                for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
                     Row row = sheet.getRow(rowNum);
+                    //跳过空行
+                    if (row == null) {
+                        continue;
+                    }
                     Map<Object, Object> map = new LinkedHashMap<>();
 
                     //从第一列获取数据
@@ -252,5 +268,60 @@ public class ExcelUtils {
             return Character.toUpperCase(str.charAt(0)) +
                     str.substring(1);
         }
+    }
+
+    /**
+     * 获取单元格值
+     *
+     * @param row 获取的行
+     * @param column 获取单元格列号
+     * @return 单元格值
+     */
+    public Object getCellValue(Cell cell)
+    {
+        Object val = "";
+        try
+        {
+            if (cell != null)
+            {
+                if (cell.getCellType() == CellType.NUMERIC || cell.getCellType() == CellType.FORMULA)
+                {
+                    val = cell.getNumericCellValue();
+                    if (HSSFDateUtil.isCellDateFormatted(cell))
+                    {
+                        val = DateUtil.getJavaDate((Double) val); // POI Excel 日期格式转换
+                    }
+                    else
+                    {
+                        if ((Double) val % 1 > 0)
+                        {
+                            val = new DecimalFormat("0.00").format(val);
+                        }
+                        else
+                        {
+                            val = new DecimalFormat("0").format(val);
+                        }
+                    }
+                }
+                else if (cell.getCellType() == CellType.STRING)
+                {
+                    val = cell.getStringCellValue();
+                }
+                else if (cell.getCellType() == CellType.BOOLEAN)
+                {
+                    val = cell.getBooleanCellValue();
+                }
+                else if (cell.getCellType() == CellType.ERROR)
+                {
+                    val = cell.getErrorCellValue();
+                }
+
+            }
+        }
+        catch (Exception e)
+        {
+            return val;
+        }
+        return val;
     }
 }

@@ -1,4 +1,4 @@
-package cn.mou.annotation;
+package com.mou.annotation;
 
 import org.apache.commons.lang3.StringUtils;
 
