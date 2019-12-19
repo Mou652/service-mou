@@ -1,12 +1,30 @@
+#edu邮箱
 spring:
   mail:
-    host: smtp.qq.com
-    port: 465
-    username: 847474659@qq.com
-    password: kitjgddghkvjbeeb
-    default-encoding: UTF-8
-    properties:
-      mail:
-        smtp:
-          socketFactoryClass: javax.net.ssl.SSLSocketFactory
-        debug: true
+    host: smtp.mxhichina.com
+    username: SystemMonitor@scedu.tech
+    password: EDUedu123
+    port: 25
+mail:
+    fromMail:
+      #发件人
+      addr: SystemMonitor@scedu.tech
+
+# QQ邮箱
+# 普通QQ邮箱
+#spring:
+#  mail:
+#    host: smtp.qq.com
+#    username: 847474659@qq.com # 邮箱账号
+#    password: mwsgbmrriuxwbdfi # 授权码（下面将会告诉你怎么申请）
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#mail:
+#  fromMail:
+#    addr: 847474659@qq.com
+

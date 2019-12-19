@@ -12,6 +12,8 @@
         <module>guava</module>
         <module>designPattern</module>
         <module>json</module>
+        <module>netty_chat</module>
+        <module>leetcode</module>
     </modules>
 
     <dependencies>
