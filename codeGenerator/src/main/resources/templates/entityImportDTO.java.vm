@@ -1,0 +1,26 @@
+package $!{dtoPackage};
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * excel导入dto
+ *
+ * @author: codeGenerator
+ * @date: $!{date}
+ */
+@Data
+public class $!{entity}ImportDTO {
+
+    @ApiModelProperty("从第几条数据开始读取")
+    private String headerLine;
+
+    @ApiModelProperty("1 覆盖重复数据  2 跳过重复数据 3 允许重复数据")
+    private String ruleNum;
+
+    @ApiModelProperty("匹配的字段列表")
+    private List<Map<String, Object>> matchFieldList;
+}

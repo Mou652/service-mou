@@ -1,0 +1,108 @@
+package $!{package.Service};
+
+#set($voPackage=$package.Entity.replace("entity","dto"))
+import $!{dtoPackage}.$!{entity}DTO;
+import $!{dtoPackage}.$!{entity}ExcelDTO;
+import $!{dtoPackage}.$!{entity}ImportDTO;
+import $!{package.Entity}.$!{entity};
+import $!{superServiceClassPackage};
+import org.springframework.web.multipart.MultipartFile;
+import tech.scedu.micro.template.util.page.SpringPageVO;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * $!{table.comment} 服务类
+ *
+ * @author codeGenerator
+ * @since $!{date}
+ */
+#if($!{kotlin})
+interface $!{table.serviceName} : $!{superServiceClass}<$!{entity}>
+#else
+public interface $!{table.serviceName} extends $!{superServiceClass}<$!{entity}> {
+
+	/**
+	 * 查询详情
+	 *
+	 * @param $!{table.entityPath} entity
+	 * @return 详情
+	 */
+	$!{entity} detail($!{entity} $!{table.entityPath});
+
+    /**
+     * 分页查询
+     *
+     * @param $!{table.entityPath}DTO 分页条件
+     * @return 分页列表
+     */
+    SpringPageVO<$!{entity}> page($!{entity}DTO $!{table.entityPath}DTO);
+
+    /**
+     * 不分页查询列表
+     *
+     * @param $!{table.entityPath} 查询条件
+     * @return 列表
+     */
+    List<$!{entity}> selectList($!{entity} $!{table.entityPath});
+
+    /**
+	 * 新增
+	 *
+	 * @param $!{table.entityPath} entity
+	 */
+    void insert($!{entity} $!{table.entityPath});
+
+    /**
+	 * 修改
+	 *
+	 * @param $!{table.entityPath} entity
+	 */
+    void updated($!{entity} $!{table.entityPath});
+
+    /**
+	 * 删除
+	 *
+	 * @param ids      id集合
+	 */
+    void removes(String ids);
+
+	/**
+	 * 上传excel文件
+	 *
+	 * @param file     文件
+	 * @return true-上传成功,false-上传失败
+	 */
+	boolean uploadExcel(MultipartFile file);
+
+	/**
+	 * 返回excel可导出字段
+	 *
+	 * @return 所有导出的字段
+	 */
+	Map<String, Object> getField();
+
+	/**
+	 * 获取系统字段和表头字段和已经匹配的关系
+	 *
+	 * @return 匹配结果
+	 */
+	Map<String, Object> getSysFieldAndExcelField();
+
+	/**
+	 * 导出excel
+	 *
+	 * @param $!{table.entityPath}ExcelDTO 导出DTO
+	 */
+	void export($!{entity}ExcelDTO $!{table.entityPath}ExcelDTO);
+
+	/**
+	 * 导入excel
+	 *
+	 * @param importDTO 导入DTO
+	 * @return 导入结果
+	 */
+	Map<String, Object> importExcel($!{entity}ImportDTO importDTO);
+}
+#end

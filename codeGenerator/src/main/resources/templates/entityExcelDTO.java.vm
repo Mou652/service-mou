@@ -1,0 +1,33 @@
+package $!{dtoPackage};
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import $!{package.Entity}.$!{entity};
+
+/**
+ * excel导入dto
+ *
+ * @author: codeGenerator
+ * @date: $!{date}
+ */
+@Data
+public class $!{entity}ExcelDTO {
+
+    @ApiModelProperty("租户id")
+    private String tenantId;
+
+    @ApiModelProperty("excel标题")
+    private String fileName;
+
+    @ApiModelProperty(value = "需要导出的数据范围", notes = "1全部数据,2条件检索,3勾选数据")
+    private String dataRange;
+
+    @ApiModelProperty("检索条件")
+    private $!{entity} formInline;
+
+    @ApiModelProperty(value = "选择的导出字段", notes = "用户自定义导出字段,格式: 专业代码:majorId,专业名称:majorName")
+    private String exportField;
+
+    @ApiModelProperty(value = "id集合", notes = "逗号分隔,勾选数据部分数据,前台传递的id集合")
+    private String choiceDataIds;
+}

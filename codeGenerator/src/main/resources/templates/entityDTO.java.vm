@@ -1,0 +1,29 @@
+#set($dtoPackage=$package.Entity.replace("entity","dto"))
+package $!{dtoPackage};
+
+import io.swagger.annotations.ApiModelProperty;
+import $!{package.Entity}.$!{entity};
+#if($!{entityLombokModel})
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+#end
+
+/**
+ * $!{table.comment}数据传输对象实体类
+ *
+ * @author $!{author}
+ * @since $!{date}
+ */
+#if($!{entityLombokModel})
+@Data
+@EqualsAndHashCode(callSuper = true)
+#end
+public class $!{entity}DTO extends $!{entity} {
+	private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty(value = "当前页")
+    private Integer pageIndex;
+
+    @ApiModelProperty(value = "每页大小")
+    private Integer pageSize;
+}
