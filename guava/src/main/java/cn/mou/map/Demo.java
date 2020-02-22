@@ -1,9 +1,11 @@
 package cn.mou.map;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import org.junit.Test;
 
@@ -64,6 +66,7 @@ public class Demo {
      */
     @Test
     public void test4() {
+        System.out.println(format(10000));
     }
 
     /**
@@ -86,9 +89,9 @@ public class Demo {
         double doubleNum = (double) count / 10000;
         String temp = String.valueOf(doubleNum);
         long indexOne = Integer.parseInt(String.valueOf(temp.charAt(temp.indexOf(".") + 1)));
-        if (doubleNum <= 1) {
+        if (doubleNum < 1) {
             format = String.valueOf(count);
-        } else if (doubleNum > 1 && doubleNum < 999 && indexOne <= 1) {
+        } else if (doubleNum >= 1 && doubleNum < 999 && indexOne <= 1) {
             format = (int) Math.floor(doubleNum) + "w+";
         } else if (doubleNum > 1 && doubleNum < 999 && indexOne > 1) {
             //四舍五入
@@ -144,5 +147,15 @@ public class Demo {
             map.put("lableId", lable);
         }
         return map;
+    }
+
+    @Test
+    public void test5() {
+        HashMap<Long, String> map = Maps.newHashMap();
+        map.put(1L, "公众号1");
+        String join = StrUtil.join(",", "公众号1,公众号2", "公众号3");
+        System.out.println(join);
+        map.put(1L,join);
+        System.out.println(join);
     }
 }

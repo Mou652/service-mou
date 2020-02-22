@@ -16,6 +16,7 @@
         <module>leetcode</module>
         <module>stream</module>
         <module>codeGenerator</module>
+        <module>common</module>
     </modules>
 
     <dependencies>
@@ -38,6 +39,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.0-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
         </dependency>
     </dependencies>
 </project>
