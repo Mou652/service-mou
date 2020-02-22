@@ -3,7 +3,7 @@ package cn.moblog.multithread;
 import cn.moblog.multithread.insertDemo.enums.UserSexEnum;
 import cn.moblog.multithread.insertDemo.model.User;
 import cn.moblog.multithread.insertDemo.service.UserService;
-import cn.moblog.multithread.utils.ThreadExecuteUpdateService;
+import cn.moblog.multithread.utils.thread.ThreadExecuteUpdateService;
 import cn.moblog.multithread.vo.ThreadExecuteUpdateVO;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

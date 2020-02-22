@@ -1,13 +1,15 @@
-package cn.moblog.multithread.utils.impl;
+package cn.moblog.multithread.utils.thread.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.moblog.multithread.utils.EntityUtils;
-import cn.moblog.multithread.utils.ThreadExecuteUpdateService;
+import cn.moblog.multithread.utils.Stopwatch;
+import cn.moblog.multithread.utils.thread.EntityUtils;
+import cn.moblog.multithread.utils.thread.ThreadExecuteUpdateService;
 import cn.moblog.multithread.vo.ThreadExecuteUpdateVO;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,7 +60,9 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
      * @param isInsert    是否是插入 - true:insert  false:update
      */
     private boolean threadExecuteUpdateHandler(List<ThreadExecuteUpdateVO> executeList, boolean isInsert) {
-        //Stopwatch stopwatch = Stopwatch.createAndBegin(log);
+        Stopwatch stopwatch = Stopwatch.createAndBegin(log);
+
+
 
         // 是否执行成功
         boolean isComplete = false;
@@ -126,7 +130,7 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
             }
         }
 
-        //stopwatch.print(Level.INFO, "threadBatchInsert()");
+        stopwatch.print(Level.INFO, "threadBatchInsert()");
         return isComplete;
     }
 

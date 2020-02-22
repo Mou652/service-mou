@@ -1,4 +1,4 @@
-package cn.moblog.multithread.utils;
+package cn.moblog.multithread.utils.thread;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
