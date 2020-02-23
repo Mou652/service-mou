@@ -27,4 +27,6 @@ package cn.moblog.multithread.insertDemo.service;
  */
 public interface UserService {
     String multiThread();
+
+    void strInsert();
 }

@@ -2,9 +2,11 @@ package cn.moblog.multithread.insertDemo.mapper;
 
 
 import cn.moblog.multithread.insertDemo.model.User;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
+@Mapper
 public interface UserMapper {
 	
 	List<User> getAll();
@@ -19,4 +21,5 @@ public interface UserMapper {
 
 	void insertBatch(List<User> list);
 
+	void strInsert(@Param("sql") String sql);
 }

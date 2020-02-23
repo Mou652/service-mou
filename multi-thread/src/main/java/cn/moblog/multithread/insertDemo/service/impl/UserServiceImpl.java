@@ -1,13 +1,14 @@
 package cn.moblog.multithread.insertDemo.service.impl;
 
 import cn.moblog.multithread.insertDemo.enums.UserSexEnum;
+import cn.moblog.multithread.insertDemo.mapper.UserMapper;
 import cn.moblog.multithread.insertDemo.model.User;
 import cn.moblog.multithread.insertDemo.service.UserService;
 import cn.moblog.multithread.insertDemo.thread.UserThread;
+import cn.moblog.multithread.utils.thread.EntityUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,6 +16,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.time.LocalDateTime.now;
 
 /**
  * @ClassName UserServiceImpl
@@ -28,13 +33,13 @@ import java.util.concurrent.CountDownLatch;
 public class UserServiceImpl implements UserService {
 
     private static Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private final UserMapper userMapper;
 
     private CountDownLatch threadsSignal;
     //每个线程处理的数据量
-    private static final int count = 1000;
+    private static final int count = 3000;
     //定义线程池数量为8,每个线程处理1000条数据
-    //private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 
     @Override
@@ -52,17 +57,17 @@ public class UserServiceImpl implements UserService {
         long start = System.currentTimeMillis();
         long end;
         logger.info("线程开始");
-        //每个线程处理1000条数据
+        //每个线程处理3000条数据
         if (userList.size() < count) {
             threadsSignal = new CountDownLatch(1);
-            threadPoolTaskExecutor.submit(new UserThread(threadsSignal, userList));
+            pool.submit(new UserThread(threadsSignal, userList));
 
         } else {
             //数据拆分
             List<List<User>> lists = createList(userList, count);
             threadsSignal = new CountDownLatch(lists.size());
             for (List<User> users : lists) {
-                threadPoolTaskExecutor.submit(new UserThread(threadsSignal, users));
+                pool.submit(new UserThread(threadsSignal, users));
             }
         }
 
@@ -71,10 +76,32 @@ public class UserServiceImpl implements UserService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        threadPoolTaskExecutor.shutdown();
+        pool.shutdown();
         end = System.currentTimeMillis();
-        System.out.println("time:" + (end - start) + "ms");
+        System.out.println("time:" + (end - start)/1000 + "s");
         return "result";
+    }
+
+    @Override
+    public void strInsert() {
+        //UserMapper userMapper = (UserMapper) SpringUtils.getBean("userMapper");
+
+        List<User> userList = new ArrayList<>();
+        for (int i = 0; i < 1000000; i++) {
+            User user = new User();
+            user.setId(UUID.randomUUID().toString().replace("-", ""));
+            user.setNickName(String.valueOf(i));
+            user.setPassWord(String.valueOf(i));
+            user.setUserName(String.valueOf(i));
+            user.setUserSex(UserSexEnum.MAN);
+            userList.add(user);
+        }
+        System.out.println(now()+":开始构建insert语句");
+        String sql = EntityUtils.getInsertString(User.class, userList);
+        System.out.println(now()+":insert语句构建完成");
+        System.out.println(now()+":开始入库");
+        userMapper.strInsert(sql);
+        System.out.println(now()+":入库完成");
     }
 
     /**

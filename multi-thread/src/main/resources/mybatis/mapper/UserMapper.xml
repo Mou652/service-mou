@@ -53,12 +53,15 @@
     </delete>
 
     <insert id="insertBatch" parameterType="cn.moblog.multithread.insertDemo.model.User" >
-        INSERT INTO users
+        INSERT INTO user
         (id, user_name,pass_word,user_sex,nick_name)
         VALUES
         <foreach collection ="list" item="user" separator =",">
             (#{user.id}, #{user.userName}, #{user.passWord}, #{user.userSex}, #{user.nickName})
         </foreach >
+    </insert>
+    <insert id="strInsert">
+        #{sql}
     </insert>
 
 </mapper>

@@ -16,4 +16,9 @@ public class UserController {
         return userService.multiThread();
     }
 
+    @RequestMapping(value = "/strInsert")
+    public void strInsert() {
+        userService.strInsert();
+    }
+
 }

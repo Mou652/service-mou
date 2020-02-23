@@ -5,7 +5,6 @@ import cn.moblog.multithread.insertDemo.model.User;
 import cn.moblog.multithread.insertDemo.util.SpringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -22,9 +21,6 @@ public class UserThread implements Runnable {
 
     CountDownLatch cdl;
     List<User> userList;
-
-    @Autowired
-    private UserMapper userMapper;
 
     public UserThread(CountDownLatch cdl, List<User> userList) {
         this.cdl = cdl;

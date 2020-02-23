@@ -31,6 +31,22 @@ class MultiThreadApplicationTests {
 
     @Test
     void threadExecuteUpdateServiceTest() {
+        List<User> userList = getUserList();
+        List<ThreadExecuteUpdateVO> vos = new ArrayList<>();
+        ThreadExecuteUpdateVO<User> vo = new ThreadExecuteUpdateVO<>();
+        vo.setClazz(User.class);
+        vo.setExecuteList(userList);
+        vos.add(vo);
+
+        threadExecuteUpdateService.threadBatchInsert(vos);
+    }
+
+    @Test
+    void strInsert() {
+        userService.strInsert();
+    }
+
+    private List<User> getUserList() {
         List<User> userList = new ArrayList<>();
         for (int i = 0; i < 1000000; i++) {
             User user = new User();
@@ -41,13 +57,6 @@ class MultiThreadApplicationTests {
             user.setUserSex(UserSexEnum.MAN);
             userList.add(user);
         }
-        List<ThreadExecuteUpdateVO> vos = new ArrayList<>();
-        ThreadExecuteUpdateVO<User> vo = new ThreadExecuteUpdateVO<>();
-        vo.setClazz(User.class);
-        vo.setExecuteList(userList);
-        vos.add(vo);
-
-        threadExecuteUpdateService.threadBatchInsert(vos);
+        return userList;
     }
-
 }

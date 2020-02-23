@@ -1,7 +1,6 @@
 package cn.moblog.multithread.utils.thread.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.moblog.multithread.utils.Stopwatch;
 import cn.moblog.multithread.utils.thread.EntityUtils;
 import cn.moblog.multithread.utils.thread.ThreadExecuteUpdateService;
 import cn.moblog.multithread.vo.ThreadExecuteUpdateVO;
@@ -9,7 +8,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +32,25 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
     /**
      * 线程执行数
      */
-    private static final int EXECUTE_SPILT = 1000;
+    private static final int EXECUTE_SPILT = 3000;
+
     /**
      * 线程池最大接受线程数，所以执行多线程批量插入/更新的数据最多支持 EXECUTE_SPILT * THREAD_POOL_MAX_COUNT 条数据
      */
     private static final int THREAD_POOL_MAX_COUNT = 10000;
+
+    /**
+     * 并行线程数
+     */
+    public static int POOL_SIZE = 0;
+
+    static {
+        /*
+            Runtime.getRuntime().availableProcessors()
+            Java虚拟机返回可用处理器的数目。
+         */
+        POOL_SIZE = Integer.max(Runtime.getRuntime().availableProcessors(), 5);
+    }
 
     @Autowired
     private HikariDataSource hikariDataSource;
@@ -60,9 +72,7 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
      * @param isInsert    是否是插入 - true:insert  false:update
      */
     private boolean threadExecuteUpdateHandler(List<ThreadExecuteUpdateVO> executeList, boolean isInsert) {
-        Stopwatch stopwatch = Stopwatch.createAndBegin(log);
-
-
+        long startMs = System.currentTimeMillis();
 
         // 是否执行成功
         boolean isComplete = false;
@@ -71,7 +81,7 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
         log.info("创建线程池...");
         ThreadFactory executor = new ThreadFactoryBuilder().setNameFormat("execute-pool-%d").build();
         ExecutorService singleThreadPool = new ThreadPoolExecutor(
-                80, THREAD_POOL_MAX_COUNT,
+                50, THREAD_POOL_MAX_COUNT,
                 60, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(5), executor, new ThreadPoolExecutor.AbortPolicy());
 
@@ -130,7 +140,7 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
             }
         }
 
-        stopwatch.print(Level.INFO, "threadBatchInsert()");
+        log.info("多线程插入完成,耗时:[{}]s",(System.currentTimeMillis()-startMs)/1000);
         return isComplete;
     }
 
@@ -261,7 +271,8 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
                     if (task.isDone() && !task.isCancelled()) {
                         isTrueList[i] = task.get();
                         break;
-                    } else {
+                    }
+                    else {
                         Thread.sleep(1);
                     }
                 }
@@ -298,6 +309,9 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
          */
         private boolean isInsert;
 
+        //@Autowired
+        //private UserMapper userMapper;
+
         ConnectionThread(Connection conn, ThreadExecuteUpdateVO<T> execute, boolean isInsert) {
             this.conn = conn;
             this.execute = execute;
@@ -318,13 +332,13 @@ public class ThreadExecuteUpdateServiceImpl implements ThreadExecuteUpdateServic
                 if (!isInsert) {
                     sql += EntityUtils.getOnDuplicateKeyUpdateString(execute.getClazz());
                 }
-
+                //userMapper.strInsert(sql);
                 PreparedStatement prepareStatement = null;
                 try {
                     prepareStatement = conn.prepareStatement(sql);
                     prepareStatement.executeUpdate();
                     transactionCompleted = true;
-
+                    log.info("线程:{}插入完成",Thread.currentThread().getName());
                     sql = null;
                 } catch (SQLException sqlEx) {
                     log.info("sql:{}" + sql);
