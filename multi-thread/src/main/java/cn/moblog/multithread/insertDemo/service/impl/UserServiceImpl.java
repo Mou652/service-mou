@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     //每个线程处理的数据量
     private static final int count = 3000;
     //定义线程池数量为8,每个线程处理1000条数据
-    private static ExecutorService pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static ExecutorService pool = Executors.newFixedThreadPool(2 * Runtime.getRuntime().availableProcessors()+1);
 
 
     @Override
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
         }
         pool.shutdown();
         end = System.currentTimeMillis();
-        System.out.println("time:" + (end - start)/1000 + "s");
+        System.out.println("time:" + (end - start) / 1000 + "s");
         return "result";
     }
 
@@ -96,12 +96,12 @@ public class UserServiceImpl implements UserService {
             user.setUserSex(UserSexEnum.MAN);
             userList.add(user);
         }
-        System.out.println(now()+":开始构建insert语句");
+        System.out.println(now() + ":开始构建insert语句");
         String sql = EntityUtils.getInsertString(User.class, userList);
-        System.out.println(now()+":insert语句构建完成");
-        System.out.println(now()+":开始入库");
+        System.out.println(now() + ":insert语句构建完成");
+        System.out.println(now() + ":开始入库");
         userMapper.strInsert(sql);
-        System.out.println(now()+":入库完成");
+        System.out.println(now() + ":入库完成");
     }
 
     /**
