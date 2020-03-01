@@ -4,8 +4,11 @@ import cn.moblog.multithread.insertDemo.enums.UserSexEnum;
 import cn.moblog.multithread.insertDemo.mapper.UserMapper;
 import cn.moblog.multithread.insertDemo.model.User;
 import cn.moblog.multithread.insertDemo.service.UserService;
+import cn.moblog.multithread.insertDemo.thread.PlatformThread;
 import cn.moblog.multithread.insertDemo.thread.UserThread;
+import cn.moblog.multithread.utils.IdService;
 import cn.moblog.multithread.utils.thread.EntityUtils;
+import cn.moblog.multithread.vo.PlatformAppsUserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
     //每个线程处理的数据量
     private static final int count = 3000;
     //定义线程池数量为8,每个线程处理1000条数据
-    private static ExecutorService pool = Executors.newFixedThreadPool(2 * Runtime.getRuntime().availableProcessors()+1);
+    private static ExecutorService pool = Executors.newFixedThreadPool(2 * Runtime.getRuntime().availableProcessors());
 
 
     @Override
@@ -104,6 +107,46 @@ public class UserServiceImpl implements UserService {
         System.out.println(now() + ":入库完成");
     }
 
+    @Override
+    public String multiThread2() {
+        IdService idService = new IdService();
+        List<PlatformAppsUserService> userList = new ArrayList<>();
+        for (int i = 0; i < 2000000; i++) {
+            PlatformAppsUserService user = new PlatformAppsUserService();
+            user.setId(idService.nextId());
+            user.setIsDeleted(0);
+            user.setUserId(idService.nextId());
+            user.setServiceId("201912250527540e15c7b30a8b4065ba");
+            userList.add(user);
+        }
+        long start = System.currentTimeMillis();
+        long end;
+        logger.info("线程开始");
+        //每个线程处理3000条数据
+        if (userList.size() < count) {
+            threadsSignal = new CountDownLatch(1);
+            pool.submit(new PlatformThread(threadsSignal, userList));
+
+        } else {
+            //数据拆分
+            List<List<PlatformAppsUserService>> lists = createList2(userList, count);
+            threadsSignal = new CountDownLatch(lists.size());
+            for (List<PlatformAppsUserService> users : lists) {
+                pool.submit(new PlatformThread(threadsSignal, users));
+            }
+        }
+
+        try {
+            threadsSignal.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        pool.shutdown();
+        end = System.currentTimeMillis();
+        System.out.println("time:" + (end - start) / 1000 + "s");
+        return "result";
+    }
+
     /**
      * 数据拆分
      *
@@ -117,6 +160,44 @@ public class UserServiceImpl implements UserService {
         int arrSize = targe.size() % size == 0 ? targe.size() / size : targe.size() / size + 1;
         for (int i = 0; i < arrSize; i++) {
             List<User> sub = new LinkedList<>();
+            //把指定索引数据放入到list中
+            for (int j = i * size; j <= size * (i + 1) - 1; j++) {
+                if (j <= targe.size() - 1) {
+                    sub.add(targe.get(j));
+                }
+            }
+            listArr.add(sub);
+        }
+        return listArr;
+    }
+
+    private List<PlatformAppsUserService> getUserList2() {
+        List<PlatformAppsUserService> userList = new ArrayList<>();
+        IdService idService = new IdService();
+        for (int i = 0; i < 5000000; i++) {
+            PlatformAppsUserService user = new PlatformAppsUserService();
+            user.setId(idService.nextId());
+            user.setIsDeleted(0);
+            user.setUserId(idService.nextId());
+            user.setServiceId("2020022611441341a2250badd34f2fbc");
+            userList.add(user);
+        }
+        return userList;
+    }
+
+    /**
+     * 数据拆分
+     *
+     * @param targe
+     * @param size
+     * @return
+     */
+    public static List<List<PlatformAppsUserService>> createList2(List<PlatformAppsUserService> targe, int size) {
+        List<List<PlatformAppsUserService>> listArr = new LinkedList<List<PlatformAppsUserService>>();
+        //获取被拆分的数组个数
+        int arrSize = targe.size() % size == 0 ? targe.size() / size : targe.size() / size + 1;
+        for (int i = 0; i < arrSize; i++) {
+            List<PlatformAppsUserService> sub = new LinkedList<>();
             //把指定索引数据放入到list中
             for (int j = i * size; j <= size * (i + 1) - 1; j++) {
                 if (j <= targe.size() - 1) {

@@ -2,6 +2,7 @@ package cn.moblog.multithread.insertDemo.mapper;
 
 
 import cn.moblog.multithread.insertDemo.model.User;
+import cn.moblog.multithread.vo.PlatformAppsUserService;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,6 +21,8 @@ public interface UserMapper {
 	void delete(Long id);
 
 	void insertBatch(List<User> list);
+
+	void insertBatchPlatform(List<PlatformAppsUserService> list);
 
 	void strInsert(@Param("sql") String sql);
 }

@@ -22,8 +22,8 @@ import static cn.hutool.core.util.StrUtil.isNotBlank;
  */
 public class Demo {
     public static void main(String[] args) {
-        System.out.println(format(32500));
-        System.out.println(remove("1001,100001", "1001,2001,2003"));
+        System.out.println(format(100000000));
+        // System.out.println(remove("1001,100001", "1001,2001,2003"));
 
     }
 

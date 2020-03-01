@@ -64,4 +64,13 @@
         #{sql}
     </insert>
 
+    <insert id="insertBatchPlatform" parameterType="cn.moblog.multithread.vo.PlatformAppsUserService" >
+        INSERT INTO platform_apps_user_service
+        (`id`, `user_id`, `service_id`, `is_deleted`)
+        VALUES
+        <foreach collection ="list" item="user" separator =",">
+            (#{user.id}, #{user.userId}, #{user.serviceId}, #{user.isDeleted})
+        </foreach >
+    </insert>
+
 </mapper>

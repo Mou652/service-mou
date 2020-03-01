@@ -29,4 +29,6 @@ public interface UserService {
     String multiThread();
 
     void strInsert();
+
+    String multiThread2();
 }

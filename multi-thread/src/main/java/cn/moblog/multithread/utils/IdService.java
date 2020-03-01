@@ -1,9 +1,10 @@
-package cn.mou.mybatis;
+package cn.moblog.multithread.utils;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -13,6 +14,7 @@ import java.net.UnknownHostException;
  *
  * @author mou
  */
+@Component
 public class IdService {
 
 	private static final int ID_LENGTH = 16;
