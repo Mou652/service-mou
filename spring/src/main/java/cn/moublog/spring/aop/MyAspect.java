@@ -5,6 +5,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
+
 @Aspect
 @Slf4j
 @Component
@@ -39,4 +41,10 @@ public class MyAspect {
       joinPoint.proceed();
       log.info("MyAspect around after ...");
   }
+
+    public static void main(String[] args) throws NoSuchFieldException {
+        Class<MyAspect> myAspectClass = MyAspect.class;
+        Field field = myAspectClass.getField("1");
+        field.setAccessible(true);
+    }
 }

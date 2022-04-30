@@ -3,7 +3,6 @@ package cn.mou.mybatis;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.mou.excel.ExcelUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
@@ -50,7 +49,7 @@ public class MybatisUtils {
     public static <T> String getInsertString(Class<T> clazz, List<T> beanList, String... ignoreFields) {
         StringBuilder insertSql = new StringBuilder();
         String className = clazz.getSimpleName();
-        insertSql.append("insert into ").append(ExcelUtils.humpToUnderline(className)).append("(");
+        insertSql.append("insert into ").append(humpToUnderline(className)).append("(");
 
         Field[] allFields = FieldUtils.getAllFields(clazz);
 
@@ -62,7 +61,7 @@ public class MybatisUtils {
 
             if (!isIgnore(ignoreFields, name)) {
                 if (!Modifier.isStatic(field.getModifiers())) {
-                    columnSql.append(ExcelUtils.humpToUnderline(name)).append(",");
+                    columnSql.append(humpToUnderline(name)).append(",");
                 }
             }
         }
@@ -128,5 +127,4 @@ public class MybatisUtils {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(date);
     }
-
 }

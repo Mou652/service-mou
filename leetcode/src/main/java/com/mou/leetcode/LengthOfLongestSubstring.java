@@ -10,6 +10,7 @@ public class LengthOfLongestSubstring {
 
     @Test
     public void test() {
+
         System.out.println(lengthOfLongestSubstring(null));
     }
 

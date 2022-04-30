@@ -1,5 +1,6 @@
 package com.itheima.hchat.mapper;
 
+import com.itheima.hchat.pojo.LaunchPlatformAuth;
 import com.itheima.hchat.pojo.TbChatRecord;
 import com.itheima.hchat.pojo.TbChatRecordExample;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,6 @@ public interface TbChatRecordMapper {
     int updateByPrimaryKeySelective(TbChatRecord record);
 
     int updateByPrimaryKey(TbChatRecord record);
+
+    void updateAuthToke(@Param("authList") List<LaunchPlatformAuth> authList);
 }

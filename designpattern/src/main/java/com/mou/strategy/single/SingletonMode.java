@@ -50,9 +50,6 @@ public class SingletonMode {
              * 就会出现问题了。因为这时将会先将内存地址赋给对象，针对上述的双重加锁，就是说先将分配好的内存地址指给synchronizedSingleton，
              * 然后再进行初始化构造器，这时候后面的线程去请求getInstance方法时，会认为synchronizedSingleton对象已经实例化了，直接返回一个引用。
              * 如果在初始化构造器之前，这个线程使用了synchronizedSingleton，就会产生莫名的错误。
-             *
-             *
-             *
              */
             if (singleton == null) {
                 synchronized (Singleton.class) {

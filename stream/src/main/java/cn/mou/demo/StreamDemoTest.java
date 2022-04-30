@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 /**
  * Stream API学习 参考:https://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/index.html
  *
- * @author: mou
+ * @author: 牟江川
  * @date: 2020/1/31
  */
 public class StreamDemoTest {

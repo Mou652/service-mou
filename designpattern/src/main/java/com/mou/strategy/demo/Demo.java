@@ -1,19 +1,17 @@
 package com.mou.strategy.demo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+
 /**
- * 伪代码
  * @author: mou
- * @date: 2019/11/12
+ * @date: 2020/3/4
  */
 public class Demo {
+    private static ThreadLocal<DateFormat> threadLocalDateFormat = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyyMMdd_HHmm"));
     public static void main(String[] args) {
-        int i=2;
-        if(i==1){
-            System.out.println(1);
-        }else if (i==2){
-            System.out.println(2);
-        }else {
-            System.out.println(3);
-        }
+        System.out.println(threadLocalDateFormat.get().format(LocalDateTime.now()));
+
     }
 }
